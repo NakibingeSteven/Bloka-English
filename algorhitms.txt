@@ -1,0 +1,13 @@
+//////////////////////////////////////////Patterns//////////////////////////////////////
+Zigzag Pattern
+Checkerboard Pattern
+Random Walk
+Snake Pattern
+Spiral Outward
+X Pattern
+Corners to Center
+Wave Pattern
+Diamond Pattern
+Fibonacci Spiral
+Binary Tree Pattern
+Knight's Tour

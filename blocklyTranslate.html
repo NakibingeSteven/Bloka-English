@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Luganda Blockly Environment</title>
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+    <style>
+        #blocklyDiv { height: 480px; width: 100%; }
+    </style>
+</head>
+<body>
+    <div id="blocklyDiv"></div>
+    <xml id="toolbox" style="display: none">
+        <category name="Obukola" colour="160">
+            <block type="move_block"></block>
+            <block type="stop_block"></block>
+        </category>
+    </xml>
+
+    <script>
+        // Luganda Translations using Blockly.Msg
+        Blockly.Msg.MOVE_BLOCK_TITLE = 'Kola';
+        Blockly.Msg.MOVE_FORWARD = 'Mu Maaso';
+        Blockly.Msg.MOVE_BACKWARD = 'Inyuma';
+        Blockly.Msg.MOVE_LEFT = 'Ku Kkono';
+        Blockly.Msg.MOVE_RIGHT = 'Ku Ddyo';
+        Blockly.Msg.STOP_BLOCK_TITLE = 'Uma';
+        Blockly.Msg.CONTINUE_BLOCK_TITLE = 'Tandika';
+
+        // Custom Block Definitions
+        Blockly.Blocks['move_block'] = {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField(Blockly.Msg.MOVE_BLOCK_TITLE)
+                    .appendField(new Blockly.FieldDropdown([
+                        [Blockly.Msg.MOVE_FORWARD, 'FORWARD'],
+                        [Blockly.Msg.MOVE_BACKWARD, 'BACKWARD'],
+                        [Blockly.Msg.MOVE_LEFT, 'LEFT'],
+                        [Blockly.Msg.MOVE_RIGHT, 'RIGHT']
+                    ]), "DIRECTION");
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(160);
+            }
+        };
+
+        Blockly.Blocks['stop_block'] = {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField(Blockly.Msg.STOP_BLOCK_TITLE);
+                this.setPreviousStatement(true, null);
+                this.setNextStatement(true, null);
+                this.setColour(210);
+            }
+        };
+
+        // JavaScript Code Generators
+        Blockly.JavaScript['move_block'] = function(block) {
+            const direction = block.getFieldValue('DIRECTION');
+            return `moveRobot("${direction}");\n`;
+        };
+
+        Blockly.JavaScript['stop_block'] = function() {
+            return 'stopRobot();\n';
+        };
+
+        // Workspace Initialization
+        const workspace = Blockly.inject('blocklyDiv', {
+            toolbox: document.getElementById('toolbox'),
+            grid: {
+                spacing: 20,
+                length: 3,
+                colour: '#ccc',
+                snap: true
+            },
+            trashcan: true
+        });
+
+        // Optional: Code Generation Button
+        function generateCode() {
+            const code = Blockly.JavaScript.workspaceToCode(workspace);
+            console.log(code);
+            alert(code);
+        }
+    </script>
+    <button onclick="generateCode()">Generate Luganda Code</button>
+</body>
+</html>

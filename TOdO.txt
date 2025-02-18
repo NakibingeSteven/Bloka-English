@@ -1,0 +1,38 @@
+//////////////////////////////NEW BLOCKS///////////////////////
+wait block
+set home postiions(column,row)
+history blockretrace block for paths with up to 40 history places stored 
+history trace block(fors tarting and ending hostry track)
+viewto see tracked history
+blocs for number of  value
+block for number of columns
+keyboard assigning commands with dropdwon key assingments
+mouse assigning commands with dropdwon key assingments
+Slection of wall hiting algorithims
+    Wall hitting algorithims
+    BounceBack 
+    come through to the other side
+
+
+Preloaded blcokalgorhims to ty out
+navigate whole tabel row by row
+nvaigate whle table column by column
+move along diagonal(add 1 to x, add 1 to y)
+move around teh outr edges(complete loop)
+Spiral to to teh middle
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////todo v0.01
+make teh hosry feature work
+hadd mroe unique patterns
+add mroe visualistaitosn

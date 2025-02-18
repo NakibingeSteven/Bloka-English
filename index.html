@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Blockly Area Calculator</title>
+  <script src="./blockly/blockly_compressed.js"></script>
+  <script src="./blockly/blocks_compressed.js"></script>
+  <script src="./blockly/javascript_compressed.js"></script>
+  <script src="./blockly/en.js"></script>
+  <script src="./blocks/move.js"></script>
+  <script src="./generators/move.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .content {
+      display: flex;
+      flex: 1;
+      gap: 10px;
+    }
+
+    .grid-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: white;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .blockly-section {
+      flex: 1;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .controls {
+      margin-bottom: 10px;
+    }
+
+    .canvas-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    canvas {
+      border: 1px solid #ccc;
+      background-color: white;
+    }
+
+    #blocklyDiv {
+      flex: 1;
+      min-height: 200px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px;
+    }
+
+    button {
+      padding: 8px 12px;
+      background-color: #4285F4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #3b78e7;
+    }
+
+    .coordinates {
+      margin-top: 10px;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>Blockly Grid Navigation</h1>
+      <p>Tap on <b>Algorithims</b> to see the different patterns u can program and try to recreate them using the other blocks it the environment</p>
+      <p>Genda onyinge ku <b>Algorithims</b> olabe programu zosobola okukola nga okozesa bloka eziwereddwa mu programu enno.</p>
+    </div>
+
+    <div class="content">
+      <div class="blockly-section">
+        <div id="blocklyDiv"></div>
+        <div class="buttons">
+          <button id="runCode">Run Program</button>
+          <button id="resetCode">Reset</button>
+        </div>
+      </div>
+      <div class="grid-section">
+
+        <div class="controls">
+          <label for="rows">Rows:</label>
+          <input type="number" id="rows" min="1" max="50" value="5" style="width: 50px;">
+
+          <label for="columns">Columns:</label>
+          <input type="number" id="cols" min="1" max="50" value="5" style="width: 50px;">
+
+          <button id="createGrid">Create Grid</button>
+          <select id="wallBehavior">
+            <option value="bounce">Bounce Back</option>
+            <option value="wrap">Wrap Around</option>
+          </select>
+        </div>
+
+        <div class="canvas-container">
+          <canvas id="gridCanvas" width="400" height="400"></canvas>
+          <!-- <div class="history-view" id="historyView">History will appear here</div> -->
+        </div>
+
+        <div class="coordinates">
+          Position: <span id="position">Row: 0, Column: 0</span>
+        </div>
+      </div>
+
+
+    </div>
+    <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+      <category name="Logic" colour="#5b80a5">
+        <block type="controls_if"></block>
+        <block type="logic_compare">
+          <field name="OP">EQ</field>
+        </block>
+        <block type="logic_operation">
+          <field name="OP">AND</field>
+        </block>
+        <block type="logic_negate"></block>
+        <block type="logic_boolean">
+          <field name="BOOL">TRUE</field>
+        </block>
+        <block type="logic_null"></block>
+        <block type="logic_ternary"></block>
+      </category>
+      <category name="Loops" colour="#5ba55b">
+        <block type="controls_repeat_ext">
+          <value name="TIMES">
+            <shadow type="math_number">
+              <field name="NUM">10</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="controls_whileUntil">
+          <field name="MODE">WHILE</field>
+        </block>
+        <block type="controls_for">
+          <field name="VAR" id="uP~nc`4Kj37TN6=[NZ5)">i</field>
+          <value name="FROM">
+            <shadow type="math_number">
+              <field name="NUM">1</field>
+            </shadow>
+          </value>
+          <value name="TO">
+            <shadow type="math_number">
+              <field name="NUM">10</field>
+            </shadow>
+          </value>
+          <value name="BY">
+            <shadow type="math_number">
+              <field name="NUM">1</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="controls_forEach">
+          <field name="VAR" id="qh#%S3SIaWr_QVvkRv^G">j</field>
+        </block>
+        <block type="controls_flow_statements">
+          <field name="FLOW">BREAK</field>
+        </block>
+      </category>
+      <category name="Math" colour="#5b67a5">
+        <block type="math_number">
+          <field name="NUM">0</field>
+        </block>
+        <block type="math_arithmetic">
+          <field name="OP">ADD</field>
+          <value name="A">
+            <shadow type="math_number">
+              <field name="NUM">1</field>
+            </shadow>
+          </value>
+          <value name="B">
+            <shadow type="math_number">
+              <field name="NUM">1</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="math_single">
+          <field name="OP">ROOT</field>
+          <value name="NUM">
+            <shadow type="math_number">
+              <field name="NUM">9</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="math_trig">
+          <field name="OP">SIN</field>
+          <value name="NUM">
+            <shadow type="math_number">
+              <field name="NUM">45</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="math_constant">
+          <field name="CONSTANT">PI</field>
+        </block>
+        <block type="math_number_property">
+          <mutation divisor_input="false"></mutation>
+          <field name="PROPERTY">EVEN</field>
+          <value name="NUMBER_TO_CHECK">
+            <shadow type="math_number">
+              <field name="NUM">0</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="math_round">
+          <field name="OP">ROUND</field>
+          <value name="NUM">
+            <shadow type="math_number">
+              <field name="NUM">3.1</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="math_on_list">
+          <mutation op="SUM"></mutation>
+          <field name="OP">SUM</field>
+        </block>
+        <block type="math_modulo">
+          <value name="DIVIDEND">
+            <shadow type="math_number">
+              <field name="NUM">64</field>
+            </shadow>
+          </value>
+          <value name="DIVISOR">
+            <shadow type="math_number">
+              <field name="NUM">10</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="math_constrain">
+          <value name="VALUE">
+            <shadow type="math_number">
+              <field name="NUM">50</field>
+            </shadow>
+          </value>
+          <value name="LOW">
+            <shadow type="math_number">
+              <field name="NUM">1</field>
+            </shadow>
+          </value>
+          <value name="HIGH">
+            <shadow type="math_number">
+              <field name="NUM">100</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="math_random_int">
+          <value name="FROM">
+            <shadow type="math_number">
+              <field name="NUM">1</field>
+            </shadow>
+          </value>
+          <value name="TO">
+            <shadow type="math_number">
+              <field name="NUM">100</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="math_random_float"></block>
+      </category>
+      <category name="Text" colour="#5ba58c">
+        <block type="text">
+          <field name="TEXT"></field>
+        </block>
+        <block type="text_join">
+          <mutation items="2"></mutation>
+        </block>
+        <block type="text_append">
+          <field name="VAR" id="v{#Kw_j/V?18AOLMA)28">item</field>
+          <value name="TEXT">
+            <shadow type="text">
+              <field name="TEXT"></field>
+            </shadow>
+          </value>
+        </block>
+        <block type="text_length">
+          <value name="VALUE">
+            <shadow type="text">
+              <field name="TEXT">abc</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="text_isEmpty">
+          <value name="VALUE">
+            <shadow type="text">
+              <field name="TEXT"></field>
+            </shadow>
+          </value>
+        </block>
+        <block type="text_indexOf">
+          <field name="END">FIRST</field>
+          <value name="VALUE">
+            <block type="variables_get">
+              <field name="VAR" id="R[?v!(3??)U{fq*%$/h1">text</field>
+            </block>
+          </value>
+          <value name="FIND">
+            <shadow type="text">
+              <field name="TEXT">abc</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="text_charAt">
+          <mutation at="true"></mutation>
+          <field name="WHERE">FROM_START</field>
+          <value name="VALUE">
+            <block type="variables_get">
+              <field name="VAR" id="R[?v!(3??)U{fq*%$/h1">text</field>
+            </block>
+          </value>
+        </block>
+        <block type="text_getSubstring">
+          <mutation at1="true" at2="true"></mutation>
+          <field name="WHERE1">FROM_START</field>
+          <field name="WHERE2">FROM_START</field>
+          <value name="STRING">
+            <block type="variables_get">
+              <field name="VAR" id="R[?v!(3??)U{fq*%$/h1">text</field>
+            </block>
+          </value>
+        </block>
+        <block type="text_changeCase">
+          <field name="CASE">UPPERCASE</field>
+          <value name="TEXT">
+            <shadow type="text">
+              <field name="TEXT">abc</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="text_trim">
+          <field name="MODE">BOTH</field>
+          <value name="TEXT">
+            <shadow type="text">
+              <field name="TEXT">abc</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="text_print">
+          <value name="TEXT">
+            <shadow type="text">
+              <field name="TEXT">abc</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="text_prompt_ext">
+          <mutation type="TEXT"></mutation>
+          <field name="TYPE">TEXT</field>
+          <value name="TEXT">
+            <shadow type="text">
+              <field name="TEXT">abc</field>
+            </shadow>
+          </value>
+        </block>
+      </category>
+      <category name="Lists" colour="#745ba5">
+        <block type="lists_create_with">
+          <mutation items="0"></mutation>
+        </block>
+        <block type="lists_create_with">
+          <mutation items="3"></mutation>
+        </block>
+        <block type="lists_repeat">
+          <value name="NUM">
+            <shadow type="math_number">
+              <field name="NUM">5</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="lists_length"></block>
+        <block type="lists_isEmpty"></block>
+        <block type="lists_indexOf">
+          <field name="END">FIRST</field>
+          <value name="VALUE">
+            <block type="variables_get">
+              <field name="VAR" id="SW=`*YK]W+j;USy@imyW">list</field>
+            </block>
+          </value>
+        </block>
+        <block type="lists_getIndex">
+          <mutation statement="false" at="true"></mutation>
+          <field name="MODE">GET</field>
+          <field name="WHERE">FROM_START</field>
+          <value name="VALUE">
+            <block type="variables_get">
+              <field name="VAR" id="SW=`*YK]W+j;USy@imyW">list</field>
+            </block>
+          </value>
+        </block>
+        <block type="lists_setIndex">
+          <mutation at="true"></mutation>
+          <field name="MODE">SET</field>
+          <field name="WHERE">FROM_START</field>
+          <value name="LIST">
+            <block type="variables_get">
+              <field name="VAR" id="SW=`*YK]W+j;USy@imyW">list</field>
+            </block>
+          </value>
+        </block>
+        <block type="lists_getSublist">
+          <mutation at1="true" at2="true"></mutation>
+          <field name="WHERE1">FROM_START</field>
+          <field name="WHERE2">FROM_START</field>
+          <value name="LIST">
+            <block type="variables_get">
+              <field name="VAR" id="SW=`*YK]W+j;USy@imyW">list</field>
+            </block>
+          </value>
+        </block>
+        <block type="lists_split">
+          <mutation mode="SPLIT"></mutation>
+          <field name="MODE">SPLIT</field>
+          <value name="DELIM">
+            <shadow type="text">
+              <field name="TEXT">,</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="lists_sort">
+          <field name="TYPE">NUMERIC</field>
+          <field name="DIRECTION">1</field>
+        </block>
+      </category>
+      <category name="Variables" colour="#a55b80" custom="VARIABLE"></category>
+      <category name="Functions" colour="#995ba5" custom="PROCEDURE"></category>
+      <category name="Movement" colour="120">
+        <block type="move_up"></block>
+        <block type="move_down"></block>
+        <block type="move_left"></block>
+        <block type="move_right"></block>
+        <block type="wait_block"></block>
+      </category>
+      <category name="Position" colour="160">
+        <block type="set_home"></block>
+        <block type="get_row"></block>
+        <block type="get_col"></block>
+        <block type="get_total_rows"></block>
+        <block type="get_total_cols"></block>
+      </category>
+      <category name="History" colour="200">
+        <block type="start_history"></block>
+        <block type="stop_history"></block>
+        <block type="retrace_path"></block>
+      </category>
+      <category name="Controls" colour="240">
+        <block type="set_keyboard_control">
+          <value name="KEY">
+            <block type="key_options"></block>
+          </value>
+        </block>
+        <block type="set_mouse_control">
+          <value name="BUTTON">
+            <block type="mouse_options"></block>
+          </value>
+        </block>
+      </category>
+      <category name="Algorithms" colour="280">
+        <block type="row_by_row"></block>
+        <block type="column_by_column"></block>
+        <block type="diagonal_path"></block>
+        <block type="outer_edge"></block>
+        <block type="spiral_inward"></block>
+        <block type="zigzag_pattern"></block>
+        <block type="checkerboard_pattern"></block>
+        <block type="random_walk">
+          <value name="STEPS">
+            <shadow type="math_number">
+              <field name="NUM">20</field>
+            </shadow>
+          </value>
+        </block>
+        <block type="snake_pattern"></block>
+        <block type="spiral_outward"></block>
+        <block type="x_pattern"></block>
+        <block type="corners_to_center"></block>
+        <block type="wave_pattern"></block>
+        <block type="diamond_pattern"></block>
+        <block type="fibonacci_spiral"></block>
+        <block type="binary_tree"></block>
+        <block type="knight_tour"></block>
+      </category>
+      <category name="Loops" colour="320">
+        <block type="controls_repeat"></block>
+        <block type="controls_whileUntil"></block>
+      </category>
+    </xml>
+
+  </div>
+  <script>
+
+    ///////////////////////////////////////////BLOCKLY CODE/////////////////////////////////////////////////////////////////
+    //INJECTING THE BLOCKS INTO THE XML SECTION
+    var toolbox = document.getElementById("toolbox");
+    var options = {
+      toolbox: toolbox,
+      collapse: true,
+      comments: true,
+      disable: true,
+      maxBlocks: Infinity,
+      trashcan: true,
+      horizontalLayout: false,
+      toolboxPosition: "start",
+      media: "media/",
+      css: true,
+      rtl: false,
+      scrollbars: true,
+      sounds: true,
+      oneBasedIndex: true,
+    };
+
+    var workspace = Blockly.inject("blocklyDiv", options);
+
+    ////CODE EXECUTION//
+    // Run the code generated from Blockly
+    function runCode() {
+      // Reset position
+      // currentRow = 0;
+      // currentCol = 0;
+      drawGrid();
+      updatePosition();
+
+      // Generate and run JavaScript code
+      const code = Blockly.JavaScript.workspaceToCode(workspace);
+      try {
+        // Use a timeout to allow the UI to update
+        setTimeout(function () {
+          eval(code);
+        }, 100);
+      } catch (e) {
+        alert('Error executing code: ' + e);
+      }
+    }
+
+    // Reset the workspace
+    function resetWorkspace() {
+      workspace.clear();
+      // Reset grid position
+      currentRow = 0;
+      currentCol = 0;
+      drawGrid();
+      updatePosition();
+    }
+
+    //////////////////////////////////////////////MAZE CODE///////////////////////////////////////////
+    // Grid state and history management
+    let state = {
+      currentRow: 0,
+      currentCol: 0,
+      rows: 10,
+      cols: 10,
+      history: [],
+      isRecording: false,
+      wallBehavior: 'bounce',
+      keyboardControls: {},
+      mouseControls: {}
+    };
+
+
+    // State management additions
+    const stateExtensions = {
+      visitedCells: new Set(),
+      pathHistory: [],
+
+      clearVisited() {
+        this.visitedCells.clear();
+        this.pathHistory = [];
+        drawGrid();
+      },
+
+      markVisited(row, col) {
+        this.visitedCells.add(`${row},${col}`);
+        this.pathHistory.push({ row, col });
+        drawGrid();
+      },
+
+      isVisited(row, col) {
+        return this.visitedCells.has(`${row},${col}`);
+      }
+    };
+
+    // Extend the state object with new properties
+    Object.assign(state, stateExtensions);
+
+    /////////////////////////////////////////////CANVAS CODE///////////////////////////////////////////////////////////////
+    // Get DOM elements
+    const rowsInput = document.getElementById('rows');
+    const columnsInput = document.getElementById('columns');
+    const createGridBtn = document.getElementById('createGrid');
+    const positionDisplay = document.getElementById('position');
+    const runCodeBtn = document.getElementById('runCode');
+    const resetCodeBtn = document.getElementById('resetCode');
+
+    // Grid state
+    let rows = 5;
+    let columns = 5;
+    let cellSize = 0;
+    let currentRow = 0;
+    let currentCol = 0;
+    let gridOffsetX = 0;
+    let gridOffsetY = 0;
+
+    // Movement functions
+    function moveUp() {
+      if (currentRow > 0) {
+        currentRow--;
+        drawGrid();
+        updatePosition();
+      }
+    }
+
+    function moveDown() {
+      if (currentRow < rows - 1) {
+        currentRow++;
+        drawGrid();
+        updatePosition();
+      }
+    }
+
+    function moveLeft() {
+      if (currentCol > 0) {
+        currentCol--;
+        drawGrid();
+        updatePosition();
+      }
+    }
+
+    function moveRight() {
+      if (currentCol < columns - 1) {
+        currentCol++;
+        drawGrid();
+        updatePosition();
+      }
+    }
+
+    async function moveToPosition(row, col) {
+      return new Promise(resolve => {
+        state.currentRow = row;
+        state.currentCol = col;
+        drawGrid();
+        setTimeout(resolve, 100);
+      });
+    }
+
+    function moveWithBehavior(newRow, newCol) {
+      if (state.wallBehavior === 'bounce') {
+        if (newRow >= 0 && newRow < state.rows && newCol >= 0 && newCol < state.cols) {
+          state.currentRow = newRow;
+          state.currentCol = newCol;
+        }
+      } else {
+        state.currentRow = (newRow + state.rows) % state.rows;
+        state.currentCol = (newCol + state.cols) % state.cols;
+      }
+
+      if (state.isRecording) {
+        state.history.push({ row: state.currentRow, col: state.currentCol });
+        if (state.history.length > 40) state.history.shift();
+      }
+
+      drawGrid();
+      updateHistoryView();
+    }
+
+    // Predefined algorithms
+    function rowByRow() {
+      const moves = [];
+      for (let row = 0; row < state.rows; row++) {
+        for (let col = 0; col < state.cols; col++) {
+          moves.push({ row, col });
+        }
+      }
+      return moves;
+    }
+
+    function columnByColumn() {
+      const moves = [];
+      for (let col = 0; col < state.cols; col++) {
+        for (let row = 0; row < state.rows; row++) {
+          moves.push({ row, col });
+        }
+      }
+      return moves;
+    }
+
+    function spiralInward() {
+      const moves = [];
+      let top = 0, bottom = state.rows - 1;
+      let left = 0, right = state.cols - 1;
+
+      while (top <= bottom && left <= right) {
+        // Top row
+        for (let col = left; col <= right; col++) moves.push({ row: top, col });
+        top++;
+
+        // Right column
+        for (let row = top; row <= bottom; row++) moves.push({ row, col: right });
+        right--;
+
+        if (top <= bottom) {
+          // Bottom row
+          for (let col = right; col >= left; col--) moves.push({ row: bottom, col });
+          bottom--;
+        }
+
+        if (left <= right) {
+          // Left column
+          for (let row = bottom; row >= top; row--) moves.push({ row, col: left });
+          left++;
+        }
+      }
+      return moves;
+    }
+
+
+    // Initialize the grid
+    function initializeGrid() {
+      rows = parseInt(rowsInput.value);
+      columns = parseInt(columnsInput.value);
+
+      // Calculate the maximum possible cell size that fits within the canvas
+      const maxCellWidth = Math.floor(canvas.width / columns);
+      const maxCellHeight = Math.floor(canvas.height / rows);
+      cellSize = Math.min(maxCellWidth, maxCellHeight);
+
+      // Calculate the total grid width and height
+      const totalWidth = cellSize * columns;
+      const totalHeight = cellSize * rows;
+
+      // Calculate the offset to center the grid in the canvas
+      gridOffsetX = Math.floor((canvas.width - totalWidth) / 2);
+      gridOffsetY = Math.floor((canvas.height - totalHeight) / 2);
+
+      // Reset position to 0,0
+      currentRow = 0;
+      currentCol = 0;
+
+      drawGrid();
+      updatePosition();
+    }
+
+
+    // Extend the drawGrid function to show visited cells
+    const originalDrawGrid = drawGrid;
+
+
+    // Draw the grid and the square
+    function drawGrid() {
+      const canvas = document.getElementById('gridCanvas');
+      const ctx = canvas.getContext('2d');
+      const cellSize = Math.min(canvas.width / state.cols, canvas.height / state.rows);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw grid lines
+      ctx.strokeStyle = '#ccc';
+      for (let i = 0; i <= state.rows; i++) {
+        ctx.beginPath();
+        ctx.moveTo(0, i * cellSize);
+        ctx.lineTo(canvas.width, i * cellSize);
+        ctx.stroke();
+      }
+      for (let i = 0; i <= state.cols; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * cellSize, 0);
+        ctx.lineTo(i * cellSize, canvas.height);
+        ctx.stroke();
+      }
+
+      // Draw current position
+      ctx.fillStyle = 'blue';
+      ctx.fillRect(
+        state.currentCol * cellSize + 2,
+        state.currentRow * cellSize + 2,
+        cellSize - 4,
+        cellSize - 4
+      );
+
+      // Draw visited cells
+      ctx.fillStyle = 'rgba(200, 200, 255, 0.3)';
+      state.visitedCells.forEach(coord => {
+        const [row, col] = coord.split(',').map(Number);
+        ctx.fillRect(
+          col * cellSize + 1,
+          row * cellSize + 1,
+          cellSize - 2,
+          cellSize - 2
+        );
+      });
+
+      // Draw history path
+      if (state.pathHistory.length > 1) {
+        ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        const start = state.pathHistory[0];
+        ctx.moveTo(
+          (start.col + 0.5) * cellSize,
+          (start.row + 0.5) * cellSize
+        );
+
+        for (let i = 1; i < state.pathHistory.length; i++) {
+          const pos = state.pathHistory[i];
+          ctx.lineTo(
+            (pos.col + 0.5) * cellSize,
+            (pos.row + 0.5) * cellSize
+          );
+        }
+        ctx.stroke();
+      }
+    }
+
+    function updateHistoryView() {
+      const view = document.getElementById('historyView');
+      view.innerHTML = state.history
+        .map(pos => `(${pos.row}, ${pos.col})`)
+        .join(' → ');
+    }
+
+    // Update position display
+    function updatePosition() {
+      positionDisplay.textContent = `Row: ${currentRow}, Column: ${currentCol}`;
+    }
+
+    // Event listeners
+    // Event listeners
+    document.getElementById('createGrid').addEventListener('click', () => {
+      state.rows = parseInt(document.getElementById('rows').value);
+      state.cols = parseInt(document.getElementById('cols').value);
+      state.currentRow = 0;
+      state.currentCol = 0;
+      state.history = [];
+      drawGrid();
+    });
+
+    document.getElementById('runCode').addEventListener('click', async () => {
+      const code = Blockly.JavaScript.workspaceToCode(workspace);
+      try {
+        eval(`(async () => { ${code} })()`);
+      } catch (e) {
+        console.error('Error executing code:', e);
+      }
+    });
+
+    document.getElementById('resetCode').addEventListener('click', () => {
+      workspace.clear();
+      state.currentRow = 0;
+      state.currentCol = 0;
+      state.history = [];
+      drawGrid();
+      updateHistoryView();
+    });
+
+    // Initialize on load
+    window.addEventListener('load', drawGrid);
+  </script>
+</body>
+
+</html>
